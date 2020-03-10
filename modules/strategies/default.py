@@ -6,4 +6,4 @@ class DefaultStrategy:
     '''
 
     def __init__(self):
-        print(1)
+        return

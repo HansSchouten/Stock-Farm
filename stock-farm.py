@@ -1,3 +1,4 @@
+
 import sys, getopt
 
 from modules.simulator import StrategySimulator
@@ -34,8 +35,9 @@ def main(argv):
         sys.exit(2)
 
     strategy = DefaultStrategy()
-    market = MarketSimulator(marketSymbol)
-    simulation = StrategySimulator(market, strategy)
+    marketSimulator = MarketSimulator(marketSymbol)
+    simulator = StrategySimulator(marketSimulator, strategy)
+    simulator.run()
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
