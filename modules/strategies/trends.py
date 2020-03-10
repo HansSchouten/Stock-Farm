@@ -9,8 +9,26 @@ class SimpleTrendStrategy(Strategy):
 
     """
 
-    def handleTick(self, ticker: StockTicker, tick: dict, portfolio: Portfolio):
+    def handleTick(self, ticker: StockTicker, tick: dict):
         """
         Handle a new stock market tick.
 
         """
+        recentHistory = ticker.getHistoryWindow(20)
+        if recentHistory != None:
+            if self.isUpwardTrend(recentHistory):
+                self.portfolio.buyLong(10)
+
+    def isUpwardTrend(self, history: StockTicker):
+        """
+        Return whether the given history shows an upward trend.
+
+        """
+        upwardCount = 0
+        for i in range(1, history.getLength()):
+            previousTick = history.get(i - 1)['close']
+            thisTick = history.get(i)['close']
+            if thisTick != None and previousTick != None and history.get(i)['close'] > history.get(i-1)['close']:
+                upwardCount = upwardCount + 1
+
+        return upwardCount > (history.getLength() / 2)

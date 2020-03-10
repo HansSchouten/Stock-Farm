@@ -9,8 +9,11 @@ class Strategy(ABC):
 
     """
 
+    def __init__(self, portfolio: Portfolio):
+        self.portfolio = portfolio
+
     @abstractmethod
-    def handleTick(self, ticker: StockTicker, tick: dict, portfolio: Portfolio):
+    def handleTick(self, ticker: StockTicker, tick: dict):
         """
         Handle a new stock market tick.
 
@@ -24,7 +27,7 @@ class NothingStrategy(Strategy):
 
     """
 
-    def handleTick(self, portfolio: Portfolio, tick: dict):
+    def handleTick(self, ticker: StockTicker, tick: dict):
         """
         Handle a new stock market tick.
 

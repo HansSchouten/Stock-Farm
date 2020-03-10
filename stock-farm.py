@@ -37,14 +37,17 @@ def main(argv):
         print('Missing input parameter: -m, --market')
         sys.exit(2)
         
-    strategy = NothingStrategy()
-    if strategyName == 'simple-trends':
-        strategy = SimpleTrendStrategy()
-
+    # define portfolio and the configured investment strategy
     portfolio = Portfolio(1000)
+    strategy = NothingStrategy(portfolio)
+    if strategyName == 'simple-trends':
+        strategy = SimpleTrendStrategy(portfolio)
+
+    # define the market and strategy simulator
     marketSimulator = MarketSimulator(marketSymbol)
     strategySimulator = StrategySimulator(marketSimulator, strategy, portfolio)
     
+    # run the investment strategy
     print("Initial portfolio value: " + str(portfolio.getValue()))
     strategySimulator.run()
     print("Portfolio value after strategy simulation: " + str(portfolio.getValue()))

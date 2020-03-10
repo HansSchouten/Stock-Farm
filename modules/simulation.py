@@ -61,4 +61,4 @@ class StrategySimulator:
         """
         while self.marketSimulator.hasNext():
             tick = self.marketSimulator.getNext()
-            self.strategy.handleTick(self.marketSimulator.getHistory(), tick, self.portfolio)
+            self.strategy.handleTick(self.marketSimulator.getHistory(), tick)
