@@ -29,8 +29,12 @@ def main(argv):
         elif opt in ('-s', '--strategy'):
             strategyName = arg
 
+    if marketSymbol == None:
+        print('Missing input parameter: -m, --market')
+        sys.exit(2)
+
     strategy = DefaultStrategy()
-    market = MarketSimulator(strategyName)
+    market = MarketSimulator(marketSymbol)
     simulation = StrategySimulator(market, strategy)
 
 if __name__ == "__main__":
