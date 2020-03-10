@@ -1,9 +1,10 @@
 
 import sys, getopt
 
-from modules.simulator import StrategySimulator
-from modules.simulator import MarketSimulator
+from modules.simulation import StrategySimulator
+from modules.simulation import MarketSimulator
 from modules.strategies.default import DefaultStrategy
+from modules.investments import Portfolio
 
 def main(argv):
     """
@@ -34,10 +35,12 @@ def main(argv):
         print('Missing input parameter: -m, --market')
         sys.exit(2)
 
+    portfolio = Portfolio(1000)
     strategy = DefaultStrategy()
     marketSimulator = MarketSimulator(marketSymbol)
-    simulator = StrategySimulator(marketSimulator, strategy)
+    simulator = StrategySimulator(marketSimulator, strategy, portfolio)
     simulator.run()
+    print(portfolio.getValue())
 
 if __name__ == "__main__":
 	main(sys.argv[1:])

@@ -4,19 +4,19 @@ import json
 import datetime
 
 from pathlib import Path
-from modules.timeseries import StockTicker
+from modules.time_series import StockTicker
 
 class YahooFinanceParser:
-    '''
+    """
     This class parses historic stock data from Yahoo Finance.
 
-    '''
+    """
 
     def getTicker(self, symbol):
         """
-		Read the json file of the configured stock market and return a list of ticks.
+        Read the json file of the configured stock market and return a list of ticks.
 
-		"""
+        """
         dataFilePath = Path('data/' + symbol + '.json')
 
         if not dataFilePath.is_file():
