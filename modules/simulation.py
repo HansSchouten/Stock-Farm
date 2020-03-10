@@ -1,7 +1,8 @@
 
 from modules.parsers import YahooFinanceParser
-from modules.strategies.base import Strategy
-from modules.investments import Portfolio
+from modules.strategies.strategy import Strategy
+from modules.portfolio import Portfolio
+from modules.ticker import StockTicker
 
 class MarketSimulator:
     """
@@ -15,6 +16,7 @@ class MarketSimulator:
         self.symbol = symbol
         self.currentTickIndex = 0
         self.tickerLength = self.ticker.getLength()
+        self.history = []
 
     def hasNext(self):
         """
@@ -29,8 +31,16 @@ class MarketSimulator:
 
         """
         tick = self.ticker.get(self.currentTickIndex)
+        self.history.append(tick)
         self.currentTickIndex = self.currentTickIndex + 1
         return tick
+
+    def getHistory(self):
+        """
+        Return the ticker of this market up to the currently simulated moment.
+
+        """
+        return StockTicker(self.history)
 
 
 class StrategySimulator:
@@ -51,4 +61,4 @@ class StrategySimulator:
         """
         while self.marketSimulator.hasNext():
             tick = self.marketSimulator.getNext()
-            self.strategy.handleTick(self.portfolio, tick)
+            self.strategy.handleTick(self.marketSimulator.getHistory(), tick, self.portfolio)

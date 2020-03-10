@@ -4,7 +4,7 @@ import json
 import datetime
 
 from pathlib import Path
-from modules.time_series import StockTicker
+from modules.ticker import StockTicker
 
 class YahooFinanceParser:
     """
