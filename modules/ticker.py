@@ -45,7 +45,7 @@ class StockTicker:
 
         ticks = []
         for windowIndex in range(width):
-            tickIndex = self.length - 1 - width + windowIndex
+            tickIndex = self.length - width + windowIndex
             ticks.append(self.ticks[tickIndex])
 
         return StockTicker(ticks)
