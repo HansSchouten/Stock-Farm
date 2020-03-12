@@ -16,7 +16,9 @@ class ARIMA(Strategy):
     """
 
     def __init__(self, portfolio):
-        self.predictions = []
+        self.previousValue = None
+        self.prediction = None
+        self.correctCount = 0
         return super().__init__(portfolio)
 
     def handleTick(self, ticker: StockTicker, tick: dict):
@@ -24,38 +26,43 @@ class ARIMA(Strategy):
         Handle a new stock market tick.
 
         """
-        print('[ Tick %i ]' % ticker.getLength())
-        print('Closing price: %.3f' % tick['close'])
+        if self.prediction:
+            if (self.prediction - tick['close'] < 0 and self.previousValue - tick['close'] < 0):
+                self.correctCount = self.correctCount + 1                
+            elif (self.prediction - tick['close'] > 0 and self.previousValue - tick['close'] > 0):
+                self.correctCount = self.correctCount + 1
+            print('Actual: %.3f' % (self.previousValue - tick['close']))
+            print()
 
-        if len(self.predictions) > 0:
-            print('predicted=%f, expected=%f' % (self.predictions[len(self.predictions) - 1], tick['close']))
+        recentHistory = ticker.getHistoryWindow(50)
+        if recentHistory != None:
+            historicValues = recentHistory.getValues('close')
+            model = ARIMAModel(historicValues, order=(3,1,0))
+            try:
+                model_fit = model.fit(disp=0)
+                self.prediction = model_fit.forecast()[0]
+                self.previousValue = tick['close']
+                print('Current value: %.3f' % tick['close'])
+                print('Prediction: %.3f' % (self.prediction - tick['close']))
+            except:
+                pass
 
-        if len(self.predictions) == 20:
-            history = ticker.getHistoryWindow(20).getValues('close')
-            print('Visualising...')
-            print('History:')
-            print(history)
-            print('Predictions:')
-            print(self.predictions)
-            error = mean_squared_error(history, self.predictions)
-            print('Test MSE: %.3f' % error)
-            pyplot.plot(history, color='black')
-            pyplot.plot(self.predictions, color='blue')
-            pyplot.show()
+        if ticker.getLength() == 60:
+            print(self.correctCount)
             sys.exit()
 
-        recentHistory = ticker.getHistoryWindow(20)
-        if recentHistory != None:
-            values  = recentHistory.getValues('close')
-            model = ARIMAModel(values, order=(3,1,0))
-            model_fit = model.fit(disp=0)
-            forecast = model_fit.forecast()
-            self.predictions.append(forecast[0][0])
-            print('Forecasting for next iteration..')
-            print(values)
-            print('Forecast: %.3f' % forecast[0][0])
+    def evaluatePredictions(self):
+        """
+        Compare historic data with predictions
 
-        print()
+        """
+        history = ticker.getHistoryWindow(len(self.predictions)).getValues('close')
+        error = mean_squared_error(history, self.predictions)
+        print('Test MSE: %.3f' % error)
+        pyplot.plot(history, color='black')
+        pyplot.plot(self.predictions, color='blue')
+        pyplot.show()
+        sys.exit()
 
     def describeModel(self):
         """
