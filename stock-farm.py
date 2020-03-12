@@ -5,6 +5,7 @@ from modules.simulation import StrategySimulator
 from modules.simulation import MarketSimulator
 from modules.strategies.strategy import NothingStrategy
 from modules.strategies.trends import SimpleTrendStrategy
+from modules.strategies.arima import ARIMA
 from modules.portfolio import Portfolio
 
 def main(argv):
@@ -42,6 +43,8 @@ def main(argv):
     strategy = NothingStrategy(portfolio)
     if strategyName == 'simple-trends':
         strategy = SimpleTrendStrategy(portfolio)
+    elif strategyName == 'arima':
+        strategy = ARIMA(portfolio)
 
     # define the market and strategy simulator
     marketSimulator = MarketSimulator(marketSymbol)

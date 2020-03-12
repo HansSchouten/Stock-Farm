@@ -23,6 +23,17 @@ class StockTicker:
         """
         return self.ticks[index]
 
+    def getValues(self, key):
+        """
+        Return an array of all tick values for the given key.
+
+        """
+        values = []
+        for tick in self.ticks:
+            values.append(tick[key])
+        return values
+
+
     def getHistoryWindow(self, width: int):
         """
         Return stock data from a given number of ticks in the past till now,
