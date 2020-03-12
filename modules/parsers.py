@@ -35,6 +35,7 @@ class YahooFinanceParser:
                 tick['low'] = data['chart']['result'][0]['indicators']['quote'][0]['low'][i]
                 tick['high'] = data['chart']['result'][0]['indicators']['quote'][0]['high'][i]
                 tick['volume'] = data['chart']['result'][0]['indicators']['quote'][0]['volume'][i]
-                ticks.append(tick)
+                if (tick['open'] and tick['close'] and tick['low'] and tick['high'] and tick['volume']):
+                    ticks.append(tick)
 
         return StockTicker(ticks)
