@@ -7,16 +7,15 @@ class Portfolio:
 
     def __init__(self, initialBalance: float):
         self.cashBalance = initialBalance
-        self.totalValue = initialBalance
         self.investments = []
         self.newInvestments = []
 
     def getValue(self):
         """
-        Return the current total portfolio value.
+        Return the total portfolio value.
 
         """
-        return self.totalValue
+        return self.cashBalance
 
     def processAfterTick(self, symbol, minValue, maxValue, closeValue):
         """
@@ -51,12 +50,12 @@ class Portfolio:
         """
         return ((percentage / 100) * self.cashBalance) / stockValue
 
-    def buyLong(self, symbol, amount, maxTicksDuration):
+    def buyLong(self, symbol, amount, cost, maxTicksDuration):
         """
-        Buy a long position for the given value.
+        Buy a long position for the given amount of stocks.
 
         """
-        if self.cashBalance < value:
+        if self.cashBalance < cost:
             return
 
         investment = {}
@@ -65,7 +64,7 @@ class Portfolio:
         investment['amount'] = amount
         investment['maxTicksLeft'] = maxTicksDuration
         self.newInvestments.append(investment)
-        self.cashBalance = self.cashBalance - value
+        self.cashBalance = self.cashBalance - cost
 
     def closePosition(self, investment, marketValue):
         """
@@ -74,3 +73,25 @@ class Portfolio:
         """
         if investment['type'] == 'long':
             self.cashBalance = self.cashBalance + (investment['amount'] * marketValue)
+
+    def closeAllPositions(self, symbol, marketValue):
+        """
+        Close all positions in the given market against the given market value.
+
+        """
+        investmentsOfOtherSymbols = []
+        for investment in self.investments:
+            if investment['symbol'] == symbol:
+                if investment['type'] == 'long':
+                    self.cashBalance = self.cashBalance + (investment['amount'] * marketValue)
+            else:
+                investmentsOfOtherSymbols.append(investment)
+
+        self.investments = investmentsOfOtherSymbols
+
+    def printOverview(self):
+        """
+        Print the current portfolio.
+
+        """
+        print('Cash balance: %.3f' % self.cashBalance)

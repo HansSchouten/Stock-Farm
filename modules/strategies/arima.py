@@ -28,18 +28,20 @@ class ARIMA(Strategy):
                 model_fit = model.fit(disp=0)
                 closePrediction = model_fit.forecast()[0]
                 deltaPrediction = closePrediction - tick['close']
-                print('Current stock value: %.3f' % tick['close'])
-                print('Prediction: %.3f' % deltaPrediction)
 
-                if deltaPrediction > tick['close'] + (tick['close'] / 100):
-                    amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['close'], 5)
-                    self.portfolio.buyLong(ticker.getSymbol(), amount, 1)
+                if deltaPrediction > 2:
+                    print('Current stock value: %.3f' % tick['close'])
+                    print('Prediction: %.3f' % deltaPrediction)
+                    print('Buying stocks...')
+                    amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['close'], 10)
+                    cost = amount * tick['close']
+                    self.portfolio.buyLong(ticker.getSymbol(), amount, cost, 1)
             except:
                 return
 
-        if ticker.getLength() == 60:
-            print(self.correctCount)
-            sys.exit()
+        #if ticker.getLength() == 1000:
+            #self.portfolio.printOverview()
+            #sys.exit()
 
     def evaluatePredictions(self, predictions):
         """
