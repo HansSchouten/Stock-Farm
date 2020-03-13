@@ -40,7 +40,14 @@ class MarketSimulator:
         Return the ticker of this market up to the currently simulated moment.
 
         """
-        return StockTicker(self.history)
+        return StockTicker(self.history, self.symbol)
+
+    def getSymbol(self):
+        """
+        Return the symbol of the currently simulated market.
+
+        """
+        return self.symbol
 
 
 class StrategySimulator:
@@ -62,3 +69,4 @@ class StrategySimulator:
         while self.marketSimulator.hasNext():
             tick = self.marketSimulator.getNext()
             self.strategy.handleTick(self.marketSimulator.getHistory(), tick)
+            self.portfolio.processAfterTick(self.marketSimulator.getSymbol(), tick['low'], tick['high'], tick['close'])

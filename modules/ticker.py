@@ -5,9 +5,17 @@ class StockTicker:
 
     """
 
-    def __init__(self, ticks: list):
+    def __init__(self, ticks: list, symbol = None):
         self.ticks = ticks
+        self.symbol = symbol
         self.length = len(ticks)
+
+    def getSymbol(self):
+        """
+        Return the symbol of the market this ticker represents.
+
+        """
+        return self.symbol
 
     def getLength(self):
         """
@@ -48,4 +56,4 @@ class StockTicker:
             tickIndex = self.length - width + windowIndex
             ticks.append(self.ticks[tickIndex])
 
-        return StockTicker(ticks)
+        return StockTicker(ticks, self.symbol)

@@ -15,52 +15,42 @@ class ARIMA(Strategy):
 
     """
 
-    def __init__(self, portfolio):
-        self.previousValue = None
-        self.prediction = None
-        self.correctCount = 0
-        return super().__init__(portfolio)
-
     def handleTick(self, ticker: StockTicker, tick: dict):
         """
         Handle a new stock market tick.
 
         """
-        if self.prediction:
-            if (self.prediction - tick['close'] < 0 and self.previousValue - tick['close'] < 0):
-                self.correctCount = self.correctCount + 1                
-            elif (self.prediction - tick['close'] > 0 and self.previousValue - tick['close'] > 0):
-                self.correctCount = self.correctCount + 1
-            print('Actual: %.3f' % (self.previousValue - tick['close']))
-            print()
-
         recentHistory = ticker.getHistoryWindow(50)
         if recentHistory != None:
             historicValues = recentHistory.getValues('close')
             model = ARIMAModel(historicValues, order=(3,1,0))
             try:
                 model_fit = model.fit(disp=0)
-                self.prediction = model_fit.forecast()[0]
-                self.previousValue = tick['close']
-                print('Current value: %.3f' % tick['close'])
-                print('Prediction: %.3f' % (self.prediction - tick['close']))
+                closePrediction = model_fit.forecast()[0]
+                deltaPrediction = closePrediction - tick['close']
+                print('Current stock value: %.3f' % tick['close'])
+                print('Prediction: %.3f' % deltaPrediction)
+
+                if deltaPrediction > tick['close'] + (tick['close'] / 100):
+                    amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['close'], 5)
+                    self.portfolio.buyLong(ticker.getSymbol(), amount, 1)
             except:
-                pass
+                return
 
         if ticker.getLength() == 60:
             print(self.correctCount)
             sys.exit()
 
-    def evaluatePredictions(self):
+    def evaluatePredictions(self, predictions):
         """
         Compare historic data with predictions
 
         """
-        history = ticker.getHistoryWindow(len(self.predictions)).getValues('close')
-        error = mean_squared_error(history, self.predictions)
+        history = ticker.getHistoryWindow(len(predictions)).getValues('close')
+        error = mean_squared_error(history, predictions)
         print('Test MSE: %.3f' % error)
         pyplot.plot(history, color='black')
-        pyplot.plot(self.predictions, color='blue')
+        pyplot.plot(predictions, color='blue')
         pyplot.show()
         sys.exit()
 

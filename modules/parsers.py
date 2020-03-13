@@ -38,4 +38,4 @@ class YahooFinanceParser:
                 if (tick['open'] and tick['close'] and tick['low'] and tick['high'] and tick['volume']):
                     ticks.append(tick)
 
-        return StockTicker(ticks)
+        return StockTicker(ticks, symbol)
