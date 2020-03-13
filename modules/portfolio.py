@@ -61,6 +61,7 @@ class Portfolio:
         investment = {}
         investment['type'] = 'long'
         investment['symbol'] = symbol
+        investment['cost'] = cost
         investment['amount'] = amount
         investment['maxTicksLeft'] = maxTicksDuration
         self.newInvestments.append(investment)
