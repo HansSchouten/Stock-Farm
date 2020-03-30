@@ -74,5 +74,5 @@ class StrategySimulator:
             self.strategy.handleTick(self.marketSimulator.getHistory(), tick)
             self.portfolio.processAfterTick(self.marketSimulator.getSymbol(), tick['close'])
 
-        self.portfolio.closeAllPositions(self.marketSimulator.getSymbol(), tick['close'])
+        #self.portfolio.closeAllPositions(self.marketSimulator.getSymbol(), tick['close'])
         self.portfolio.printOverview()

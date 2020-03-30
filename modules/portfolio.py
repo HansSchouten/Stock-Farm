@@ -89,6 +89,7 @@ class Portfolio:
         if investment['type'] == 'long':
             closeValue = investment['amount'] * marketValue * (1 - self.closeFeeFactor)
             print(str(round(investment['initialValue'], 2)) + " -> " + str(round(closeValue, 2)))
+            print(marketValue)
             self.cashBalance = self.cashBalance + closeValue
 
     def closeAllPositions(self, symbol, marketValue):
