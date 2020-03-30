@@ -11,6 +11,11 @@ class HFT(Strategy):
 
     """
 
+    buyingDelay = 1
+    sellingDelay = 1
+    buyingDelayCountdown = -1
+    sellingDelayCountdown = -1
+
     def handleTick(self, ticker: StockTicker, tick: dict):
         """
         Handle a new stock market tick.
@@ -20,17 +25,35 @@ class HFT(Strategy):
 
         if recentHistory is None:
             return
+            
+        # decrease buy/sell delay countdowns
+        if self.buyingDelayCountdown >= 0:
+            self.buyingDelayCountdown = self.buyingDelayCountdown - 1
+        if self.sellingDelayCountdown >= 0:
+            self.sellingDelayCountdown = self.sellingDelayCountdown - 1
         
-        if self.hasTriggered(recentHistory):
-            amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['bull'], 30)
-            initialValue = amount * tick['bull']
-            self.portfolio.buyLong(ticker.getSymbol(), amount, initialValue)
-
+        # sell with delay
         for position in self.portfolio.getPositions():
-            if self.hasToClose(recentHistory, tick, position):
-                self.portfolio.closeAllPositions(ticker.getSymbol(), tick['bull'])
+            if self.hasToClose(recentHistory, tick, position) and self.sellingDelayCountdown == -1 and self.buyingDelayCountdown == -1:
+                self.sellingDelayCountdown = self.sellingDelay
+
+        if self.sellingDelayCountdown == 0:
+            print('Sell:')
+            print(tick)
+            self.portfolio.closeAllPositions(ticker.getSymbol(), tick['bull'])
+        
+        # buy with delay
+        if self.hasBuyTrigger(recentHistory) and self.sellingDelayCountdown == -1 and self.buyingDelayCountdown == -1 and len(self.portfolio.getPositions()) == 0:
+            self.buyingDelayCountdown = self.buyingDelay
+
+        if self.buyingDelayCountdown == 0:
+            print()
+            print('Buy:')
+            print(tick)
+            amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['bull'], 90)
+            self.portfolio.buyLong(ticker.getSymbol(), amount, amount * tick['bull'], 600)
                 
-    def hasTriggered(self, recentHistory):
+    def hasBuyTrigger(self, recentHistory):
         """
         Check whether the buying condition has triggered.
 
@@ -44,7 +67,4 @@ class HFT(Strategy):
 
         """
         currentValue = position['amount'] * tick['bull']
-        if currentValue > (position['initialValue'] * 1.01):
-            print(str(position['initialValue']) + " -> " + str(currentValue))
-            return True
-        return False
+        return currentValue > (position['initialValue'] * 1.005)

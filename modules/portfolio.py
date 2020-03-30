@@ -36,6 +36,7 @@ class Portfolio:
             if investment['symbol'] == symbol and 'maxTicksLeft' in investment:
                 investment['maxTicksLeft'] = investment['maxTicksLeft'] - 1
                 if investment['maxTicksLeft'] == 0:
+                    print('Sold due to timeout:')
                     self.closePosition(investment, closeValue)
                 else:
                     investmentsAfterTick.append(investment)
@@ -66,7 +67,7 @@ class Portfolio:
         """
         cost = initialValue * (1 + self.openFeeFactor)
 
-        if self.cashBalance < cost:
+        if self.cashBalance <= cost:
             return
 
         investment = {}
@@ -86,7 +87,8 @@ class Portfolio:
         """
         if investment['type'] == 'long':
             closeValue = investment['amount'] * marketValue * (1 - self.closeFeeFactor)
-            self.cashBalance = self.cashBalance + clostValue
+            print(str(round(investment['initialValue'], 2)) + " -> " + str(round(closeValue, 2)))
+            self.cashBalance = self.cashBalance + closeValue
 
     def closeAllPositions(self, symbol, marketValue):
         """
@@ -96,8 +98,7 @@ class Portfolio:
         investmentsOfOtherSymbols = []
         for investment in self.investments:
             if investment['symbol'] == symbol:
-                if investment['type'] == 'long':
-                    self.cashBalance = self.cashBalance + (investment['amount'] * marketValue)
+                self.closePosition(investment, marketValue)
             else:
                 investmentsOfOtherSymbols.append(investment)
 

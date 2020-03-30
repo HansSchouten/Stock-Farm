@@ -43,7 +43,7 @@ def main(argv):
         sys.exit(2)
         
     # define portfolio and the configured investment strategy
-    portfolio = Portfolio(1000)
+    portfolio = Portfolio(100)
     strategy = NothingStrategy(portfolio)
     if strategyName == 'simple-trends':
         strategy = SimpleTrendStrategy(portfolio)
