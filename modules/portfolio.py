@@ -37,6 +37,7 @@ class Portfolio:
                 investment['maxTicksLeft'] = investment['maxTicksLeft'] - 1
                 if investment['maxTicksLeft'] == 0:
                     print('Sold due to timeout:')
+                    print(closeValue)
                     self.closePosition(investment, closeValue)
                 else:
                     investmentsAfterTick.append(investment)

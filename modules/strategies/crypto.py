@@ -11,8 +11,8 @@ class HFT(Strategy):
 
     """
 
-    buyingDelay = 1
-    sellingDelay = 1
+    buyingDelay = 0
+    sellingDelay = 0
     buyingDelayCountdown = -1
     sellingDelayCountdown = -1
 
@@ -47,11 +47,10 @@ class HFT(Strategy):
             self.buyingDelayCountdown = self.buyingDelay
 
         if self.buyingDelayCountdown == 0:
-            print()
             print('Buy:')
             print(tick)
             amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['bull'], 90)
-            self.portfolio.buyLong(ticker.getSymbol(), amount, amount * tick['bull'], 600)
+            self.portfolio.buyLong(ticker.getSymbol(), amount, amount * tick['bull'], 10)
                 
     def hasBuyTrigger(self, recentHistory):
         """
@@ -59,7 +58,16 @@ class HFT(Strategy):
 
         """
         predictorValues = recentHistory.getValues("btc")
-        return predictorValues[4] - predictorValues[3] > 0.001 * predictorValues[3]
+        followerValues = recentHistory.getValues("bull")
+        triggered = predictorValues[4] - predictorValues[3] > 0.0012 * predictorValues[3] \
+            and followerValues[4] - followerValues[0] == 0
+        if (triggered):
+            print()
+            print("BTC:")
+            print(predictorValues)
+            print("ETHBULL:")
+            print(followerValues)
+        return triggered
 
     def hasToClose(self, recentHistory, tick, position):
         """
@@ -67,4 +75,4 @@ class HFT(Strategy):
 
         """
         currentValue = position['amount'] * tick['bull']
-        return currentValue > (position['initialValue'] * 1.005)
+        return currentValue > (position['initialValue'] * 1.01)# or currentValue < (position['initialValue'] * 0.99)
