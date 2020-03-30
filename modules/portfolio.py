@@ -17,14 +17,14 @@ class Portfolio:
         """
         return self.cashBalance
 
-    def processAfterTick(self, symbol, minValue, maxValue, closeValue):
+    def processAfterTick(self, symbol, closeValue):
         """
         Close investments that triggered stop losses or that reached their max duration.
 
         """
         investmentsAfterTick = []
         for investment in self.investments:
-            if investment['symbol'] == symbol:
+            if investment['symbol'] == symbol and 'maxTicksLeft' in investment:
                 investment['maxTicksLeft'] = investment['maxTicksLeft'] - 1
                 if investment['maxTicksLeft'] == 0:
                     self.closePosition(investment, closeValue)
@@ -50,7 +50,7 @@ class Portfolio:
         """
         return ((percentage / 100) * self.cashBalance) / stockValue
 
-    def buyLong(self, symbol, amount, cost, maxTicksDuration):
+    def buyLong(self, symbol, amount, cost, maxTicksDuration = None):
         """
         Buy a long position for the given amount of stocks.
 
@@ -63,7 +63,8 @@ class Portfolio:
         investment['symbol'] = symbol
         investment['cost'] = cost
         investment['amount'] = amount
-        investment['maxTicksLeft'] = maxTicksDuration
+        if maxTicksDuration is not None:
+            investment['maxTicksLeft'] = maxTicksDuration
         self.newInvestments.append(investment)
         self.cashBalance = self.cashBalance - cost
 

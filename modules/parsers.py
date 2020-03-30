@@ -1,6 +1,7 @@
 
 import sys
 import json
+import csv
 import datetime
 
 from pathlib import Path
@@ -39,3 +40,35 @@ class YahooFinanceParser:
                     ticks.append(tick)
 
         return StockTicker(ticks, symbol)
+
+class FTXParser:
+    """
+    This class parses historic data from FTX.
+
+    """
+
+    def getTicker(self, file):
+        """
+        Read the configured csv file and return a list of ticks.
+
+        """
+        dataFilePath = Path('data/' + file + '.csv')
+
+        if not dataFilePath.is_file():
+            print('File ' + str(dataFilePath) + ' not found!')
+            sys.exit(2)
+
+        ticks = []
+        with open(dataFilePath) as dataFile:
+            reader = csv.DictReader(dataFile, ['time', 'bull', 'bear', 'btc'])
+
+            for row in reader:
+                tick = {}
+                tick['time'] = datetime.datetime.strptime(row['time'], '%Y-%m-%d %H:%M:%S.%f')
+                tick['bull'] = row['bull']
+                tick['bear'] = row['bear']
+                tick['btc'] = row['btc']
+                tick['close'] = 0
+                ticks.append(tick)
+
+        return StockTicker(ticks, file)

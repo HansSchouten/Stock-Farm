@@ -1,5 +1,6 @@
 
 from modules.parsers import YahooFinanceParser
+from modules.parsers import FTXParser
 from modules.strategies.strategy import Strategy
 from modules.portfolio import Portfolio
 from modules.ticker import StockTicker
@@ -10,8 +11,10 @@ class MarketSimulator:
 
     """
 
-    def __init__(self, symbol: str):
+    def __init__(self, marketType: str, symbol: str):
         parser = YahooFinanceParser()
+        if (marketType == 'crypto'):
+            parser = FTXParser()
         self.ticker = parser.getTicker(symbol)
         self.symbol = symbol
         self.currentTickIndex = 0
@@ -69,7 +72,7 @@ class StrategySimulator:
         while self.marketSimulator.hasNext():
             tick = self.marketSimulator.getNext()
             self.strategy.handleTick(self.marketSimulator.getHistory(), tick)
-            self.portfolio.processAfterTick(self.marketSimulator.getSymbol(), tick['low'], tick['high'], tick['close'])
+            self.portfolio.processAfterTick(self.marketSimulator.getSymbol(), tick['close'])
 
         self.portfolio.closeAllPositions(self.marketSimulator.getSymbol(), tick['close'])
         self.portfolio.printOverview()

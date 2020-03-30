@@ -6,6 +6,7 @@ from modules.simulation import MarketSimulator
 from modules.strategies.strategy import NothingStrategy
 from modules.strategies.trends import SimpleTrendStrategy
 from modules.strategies.arima import ARIMA
+from modules.strategies.crypto import HFT
 from modules.portfolio import Portfolio
 
 def main(argv):
@@ -16,13 +17,14 @@ def main(argv):
     
     # default argument values
     marketSymbol = None
+    marketType = "stocks"
     strategyName = "nothing"
 
     # parse command line arguments
     try:
-        opts, args = getopt.getopt(argv,"hm:s:",["market=","strategy="])
+        opts, args = getopt.getopt(argv,"hm:t:s:",["market=","markettype=","strategy="])
     except getopt.GetoptError:
-        print('stock-farm.py -m <market symbol> -s <strategy name>')
+        print('stock-farm.py -m <market symbol> -t [stocks/crypto] -s <strategy name>')
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', '--help'):
@@ -30,6 +32,8 @@ def main(argv):
             sys.exit()
         if opt in ('-m', '--market'):
             marketSymbol = arg
+        if opt in ('-t', '--markettype'):
+            marketType = arg
         elif opt in ('-s', '--strategy'):
             strategyName = arg
 
@@ -45,9 +49,11 @@ def main(argv):
         strategy = SimpleTrendStrategy(portfolio)
     elif strategyName == 'arima':
         strategy = ARIMA(portfolio)
+    elif strategyName == 'crypto-hft':
+        strategy = HFT(portfolio)
 
     # define the market and strategy simulator
-    marketSimulator = MarketSimulator(marketSymbol)
+    marketSimulator = MarketSimulator(marketType, marketSymbol)
     strategySimulator = StrategySimulator(marketSimulator, strategy, portfolio)
     
     # run the investment strategy
