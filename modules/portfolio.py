@@ -17,6 +17,13 @@ class Portfolio:
         """
         return self.cashBalance
 
+    def getPositions(self):
+        """
+        Return all currently active positions.
+
+        """
+        return self.investments
+
     def processAfterTick(self, symbol, closeValue):
         """
         Close investments that triggered stop losses or that reached their max duration.

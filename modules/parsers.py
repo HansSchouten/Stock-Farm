@@ -65,9 +65,9 @@ class FTXParser:
             for row in reader:
                 tick = {}
                 tick['time'] = datetime.datetime.strptime(row['time'], '%Y-%m-%d %H:%M:%S.%f')
-                tick['bull'] = row['bull']
-                tick['bear'] = row['bear']
-                tick['btc'] = row['btc']
+                tick['bull'] = float(row['bull'])
+                tick['bear'] = float(row['bear'])
+                tick['btc'] = float(row['btc'])
                 tick['close'] = 0
                 ticks.append(tick)
 
