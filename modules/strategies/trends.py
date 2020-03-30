@@ -18,8 +18,8 @@ class SimpleTrendStrategy(Strategy):
         if recentHistory != None:
             if self.isUpwardTrend(recentHistory):
                 amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['close'], 10)
-                cost = amount * tick['close']
-                self.portfolio.buyLong(ticker.getSymbol(), amount, cost, 10)
+                initialValue = amount * tick['close']
+                self.portfolio.buyLong(ticker.getSymbol(), amount, initialValue, 10)
 
     def isUpwardTrend(self, history: StockTicker):
         """

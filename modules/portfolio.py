@@ -9,6 +9,8 @@ class Portfolio:
         self.cashBalance = initialBalance
         self.investments = []
         self.newInvestments = []
+        self.openFeeFactor = 0.1 / 100
+        self.closeFeeFactor = 0.1 / 100
 
     def getValue(self):
         """
@@ -57,18 +59,20 @@ class Portfolio:
         """
         return ((percentage / 100) * self.cashBalance) / stockValue
 
-    def buyLong(self, symbol, amount, cost, maxTicksDuration = None):
+    def buyLong(self, symbol, amount, initialValue, maxTicksDuration = None):
         """
         Buy a long position for the given amount of stocks.
 
         """
+        cost = initialValue * (1 + self.openFeeFactor)
+
         if self.cashBalance < cost:
             return
 
         investment = {}
         investment['type'] = 'long'
         investment['symbol'] = symbol
-        investment['cost'] = cost
+        investment['initialValue'] = initialValue
         investment['amount'] = amount
         if maxTicksDuration is not None:
             investment['maxTicksLeft'] = maxTicksDuration
@@ -81,7 +85,8 @@ class Portfolio:
 
         """
         if investment['type'] == 'long':
-            self.cashBalance = self.cashBalance + (investment['amount'] * marketValue)
+            closeValue = investment['amount'] * marketValue * (1 - self.closeFeeFactor)
+            self.cashBalance = self.cashBalance + clostValue
 
     def closeAllPositions(self, symbol, marketValue):
         """

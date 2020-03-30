@@ -68,7 +68,7 @@ class FTXParser:
                 tick['bull'] = float(row['bull'])
                 tick['bear'] = float(row['bear'])
                 tick['btc'] = float(row['btc'])
-                tick['close'] = 0
+                tick['close'] = float(tick['bull'])
                 ticks.append(tick)
 
         return StockTicker(ticks, file)

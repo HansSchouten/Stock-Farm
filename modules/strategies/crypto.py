@@ -1,5 +1,6 @@
 
 import sys
+import random
 from modules.strategies.strategy import Strategy
 from modules.ticker import StockTicker
 from modules.portfolio import Portfolio
@@ -21,9 +22,9 @@ class HFT(Strategy):
             return
         
         if self.hasTriggered(recentHistory):
-            amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['bull'], 20)
-            cost = amount * tick['bull']
-            self.portfolio.buyLong(ticker.getSymbol(), amount, cost)
+            amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['bull'], 30)
+            initialValue = amount * tick['bull']
+            self.portfolio.buyLong(ticker.getSymbol(), amount, initialValue)
 
         for position in self.portfolio.getPositions():
             if self.hasToClose(recentHistory, tick, position):
@@ -43,7 +44,7 @@ class HFT(Strategy):
 
         """
         currentValue = position['amount'] * tick['bull']
-        if currentValue > position['cost']:
-            print(str(position['cost']) + " -> " + str(currentValue))
+        if currentValue > (position['initialValue'] * 1.01):
+            print(str(position['initialValue']) + " -> " + str(currentValue))
             return True
         return False

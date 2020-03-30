@@ -51,8 +51,8 @@ class ARIMA(Strategy):
                 print('Prediction: %.3f' % deltaPrediction)
                 print('Buying stocks...')
                 amount = self.portfolio.calculateStockAmountFromBalancePercentage(tick['close'], 10)
-                cost = amount * tick['close']
-                self.portfolio.buyLong(ticker.getSymbol(), amount, cost, 1)
+                initialValue = amount * tick['close']
+                self.portfolio.buyLong(ticker.getSymbol(), amount, initialValue, 1)
         except:
             pass
 
